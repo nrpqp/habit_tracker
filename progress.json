@@ -1,21 +1,9 @@
 {
-    "habits": {},
-    "progress": [
-        {
-            "D\u00eda": 1,
-            "A": "X",
-            "A_Comentario": "12 Hrs",
-            "M": "X",
-            "P": "X",
-            "P_Comentario": "3hrs"
-        },
-        {
-            "D\u00eda": 2,
-            "A": "X",
-            "A_Comentario": "12 hrs",
-            "M": "X",
-            "P": "X",
-            "P_Comentario": "2 hrs"
-        }
-    ]
+    "habits": {
+        "A": {"name": "Ayuno Intermitente", "goal_days": 30, "completed_days": 0},
+        "B": {"name": "Programación diaria", "goal_days": 25, "completed_days": 0},
+        "C": {"name": "Marcar tareas", "goal_days": 21, "completed_days": 0}
+    },
+    "progress": [],
+    "auto_run": false
 }

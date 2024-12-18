@@ -1,24 +1,30 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-from modules.habit_manager import HabitManager
+from modules.config_window import ConfigWindow
 
 class HabitTrackerGUI:
-    def __init__(self, habits_config):
-        self.manager = HabitManager()
+    def __init__(self, manager, habits_config):
+        """
+        Inicializa la interfaz principal.
+        """
+        self.manager = manager
         self.habits_config = habits_config
         self.window = tk.Tk()
-        self.window.title("Rastreador de Hábitos - AMP")
+        self.window.title("Rastreador de Hábitos")
+
         self.create_widgets()
         self.update_progress_table()
-        self.check_today_registration()
         self.window.mainloop()
 
     def create_widgets(self):
         """
-        Crea los elementos de la interfaz gráfica basados en la configuración inicial.
+        Crea los elementos de la interfaz gráfica.
         """
         # Título principal
         tk.Label(self.window, text="Rastreador de Hábitos", font=("Arial", 16)).pack(pady=10)
+
+        # Botón de Configuración
+        tk.Button(self.window, text="⚙️ Configuración", command=self.open_config_window).pack(pady=5)
 
         # Sección de hábitos
         habit_frame = tk.Frame(self.window)
@@ -29,12 +35,10 @@ class HabitTrackerGUI:
         self.comment_entries = {}
 
         for idx, (letter, habit) in enumerate(self.habits_config.items()):
-            # Checkbox del hábito
             var = tk.StringVar(value="")
-            tk.Checkbutton(habit_frame, text=f"[{letter}]", variable=var, onvalue="X", offvalue="").grid(row=idx, column=0, sticky="w")
+            tk.Checkbutton(habit_frame, text=f"{habit['name']} ({letter})", variable=var, onvalue="X", offvalue="").grid(row=idx, column=0, sticky="w")
             self.habit_vars[letter] = var
 
-            # Campo de texto para comentario
             comment_entry = tk.Entry(habit_frame, width=40)
             comment_entry.grid(row=idx, column=1, padx=5)
             self.comment_entries[letter] = comment_entry
@@ -53,85 +57,80 @@ class HabitTrackerGUI:
         self.tree = ttk.Treeview(self.window, columns=("Dia", *self.habits_config.keys()), show="headings", height=10)
         self.tree.pack(pady=10)
 
-        # Encabezados dinámicos
         self.tree.heading("Dia", text="Día")
-        for letter, habit in self.habits_config.items():
-            self.tree.heading(letter, text=f"{letter}")
+        for letter in self.habits_config.keys():
+            self.tree.heading(letter, text=letter)
 
         for col in ("Dia", *self.habits_config.keys()):
-            self.tree.column(col, width=120, anchor="center")
+            self.tree.column(col, width=100, anchor="center")
 
         # Leyenda
         self.legend_label = tk.Label(self.window, text="", font=("Arial", 10), justify="left")
         self.legend_label.pack(pady=10)
 
+    def open_config_window(self):
+        """
+        Abre la ventana de configuración para administrar hábitos.
+        """
+        ConfigWindow(self.manager, self.refresh_ui)
+
     def register_habits(self):
         """
-        Registra los hábitos seleccionados por el usuario y sus comentarios solo si están marcados.
+        Registra los hábitos seleccionados por el usuario y sus comentarios.
         """
         current_day = len(self.manager.data["progress"]) + 1
 
-        # Verificar si ya se registró el día actual
         if any(int(day["Día"]) == current_day for day in self.manager.data["progress"]):
             messagebox.showwarning("Advertencia", "Ya registraste hábitos para hoy.")
             return
 
-        # Crear el nuevo registro
         daily_data = {"Día": current_day}
-        for letter, habit_var in self.habit_vars.items():
-            if habit_var.get() == "X":  # Solo si el hábito está marcado
+        for letter in self.habits_config.keys():
+            if self.habit_vars[letter].get() == "X":
                 daily_data[letter] = "X"
                 comment = self.comment_entries[letter].get().strip()
-                if comment:  # Solo guarda comentario si hay texto
+                if comment:
                     daily_data[f"{letter}_Comentario"] = comment
             else:
-                daily_data[letter] = ""  # Deja vacío si no está marcado
+                daily_data[letter] = ""
 
-        # Guardar el nuevo registro
-        self.manager.save_data(daily_data)
+        self.manager.data["progress"].append(daily_data)
+        self.manager.save()
         self.update_progress_table()
         messagebox.showinfo("Éxito", "Hábitos registrados correctamente.")
         self.register_button.config(state="disabled")
 
-        # Limpiar campos
         for entry in self.comment_entries.values():
             entry.delete(0, tk.END)
 
-
     def delete_last_record(self):
         """
-        Elimina el último registro guardado.
+        Elimina el último registro de progreso.
         """
         if not self.manager.data["progress"]:
             messagebox.showwarning("Advertencia", "No hay registros para eliminar.")
             return
 
-        deleted_day = self.manager.data["progress"].pop()
-        self.manager.save_data()  # Guarda los datos actualizados
+        self.manager.data["progress"].pop()
+        self.manager.save()
         self.update_progress_table()
-        self.register_button.config(state="normal")
-        messagebox.showinfo("Éxito", f"Registro del día {deleted_day['Día']} eliminado correctamente.")
+        messagebox.showinfo("Éxito", "Último registro eliminado.")
 
     def update_progress_table(self):
         """
-        Actualiza la tabla de progreso y la leyenda.
+        Actualiza la tabla de progreso.
         """
-        # Limpiar la tabla
         for row in self.tree.get_children():
             self.tree.delete(row)
 
-        # Insertar datos válidos
         for day in self.manager.data["progress"]:
-            if isinstance(day, dict):  # Validar que sea un diccionario
-                row = [day.get("Día", "")] + [
-                    day.get(letter, "") + (f" [{day.get(f'{letter}_Comentario', '')}]" 
-                    if day.get(letter) == "X" and day.get(f"{letter}_Comentario") else "")
-                    for letter in self.habits_config.keys()
-                ]
-                self.tree.insert("", "end", values=row)
+            row = [day.get("Día", "")] + [
+                day.get(letter, "") + (f" ({day.get(f'{letter}_Comentario', '')})" if day.get(letter) == "X" and day.get(f"{letter}_Comentario") else "")
+                for letter in self.habits_config.keys()
+            ]
+            self.tree.insert("", "end", values=row)
 
         self.update_legend()
-
 
     def update_legend(self):
         """
@@ -139,25 +138,15 @@ class HabitTrackerGUI:
         """
         legend_text = ""
         for letter, habit in self.habits_config.items():
-            # Accede a 'progress' dentro de los datos
             completed_days = sum(1 for day in self.manager.data["progress"] if day.get(letter) == "X")
             total_goal = habit["goal_days"]
             percentage = (completed_days / total_goal) * 100 if total_goal > 0 else 0
             legend_text += f"{letter}: {habit['name']} - {completed_days}/{total_goal} días ({percentage:.0f}%)\n"
 
-            if completed_days >= total_goal:
-                legend_text += f"🎉 ¡Felicidades! Completaste '{habit['name']}' 🎉\n"
-
         self.legend_label.config(text=legend_text)
 
-
-    def check_today_registration(self):
+    def refresh_ui(self):
         """
-        Verifica si el día actual ya ha sido registrado y desactiva el botón si es necesario.
+        Refresca la interfaz gráfica.
         """
-        current_day = len(self.manager.data["progress"]) + 1
-        if any(int(day["Día"]) == current_day for day in self.manager.data["progress"]):
-            self.register_button.config(state="disabled")
-        else:
-            self.register_button.config(state="normal")
-
+        self.update_progress_table()

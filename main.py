@@ -1,15 +1,13 @@
-from modules.config_manager import ConfigManager
+from modules.habit_manager import HabitManager
 from modules.gui import HabitTrackerGUI
 
 def main():
-    config_manager = ConfigManager()
-    config = config_manager.load_config()
-
-    if not config:
-        config_manager.setup_initial_config_gui()
-        config = config_manager.load_config()
-
-    HabitTrackerGUI(config)
+    """
+    Función principal para inicializar el programa.
+    """
+    manager = HabitManager(data_file="progress.json")
+    habits_config = manager.data["habits"]
+    HabitTrackerGUI(manager, habits_config)
 
 if __name__ == "__main__":
     main()
