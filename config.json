@@ -1,0 +1,17 @@
+{
+    "A": {
+        "name": "Ayuno intermitente + buena alimentaci\u00f3n",
+        "goal_days": 30,
+        "completed_days": 0
+    },
+    "M": {
+        "name": "Marcar lo que s\u00ed he hecho y lo que no",
+        "goal_days": 21,
+        "completed_days": 0
+    },
+    "P": {
+        "name": "Programaci\u00f3n diaria",
+        "goal_days": 21,
+        "completed_days": 0
+    }
+}
