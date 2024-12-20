@@ -50,3 +50,14 @@ class HabitManager:
         if letter in self.data["habits"]:
             del self.data["habits"][letter]
             self.save()
+            
+    def refresh_ui(self):
+        """
+        Refresca todos los elementos de la ventana principal.
+        """
+        # Borra todos los elementos existentes
+        for widget in self.root.winfo_children():
+            widget.destroy()
+
+        # Vuelve a construir la interfaz gráfica
+        self.build_ui()

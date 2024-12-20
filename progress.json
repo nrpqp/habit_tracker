@@ -1,10 +1,5 @@
 {
     "habits": {
-        "A": {
-            "name": "Ayuno Intermitente",
-            "goal_days": 30,
-            "completed_days": 0
-        },
         "P": {
             "name": "Programar",
             "goal_days": 25,
@@ -13,6 +8,16 @@
         "T": {
             "name": "Tomar Agua",
             "goal_days": 21,
+            "completed_days": 0
+        },
+        "X": {
+            "name": "asda",
+            "goal_days": 30,
+            "completed_days": 0
+        },
+        "B": {
+            "name": "khj",
+            "goal_days": 30,
             "completed_days": 0
         }
     },
@@ -45,5 +50,6 @@
             "T_Comentario": "2 litros"
         }
     ],
-    "auto_run": true
+    "auto_run": true,
+    "auto_run_hour": "02:55"
 }
