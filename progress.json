@@ -1,9 +1,49 @@
 {
     "habits": {
-        "A": {"name": "Ayuno Intermitente", "goal_days": 30, "completed_days": 0},
-        "B": {"name": "Programación diaria", "goal_days": 25, "completed_days": 0},
-        "C": {"name": "Marcar tareas", "goal_days": 21, "completed_days": 0}
+        "A": {
+            "name": "Ayuno Intermitente",
+            "goal_days": 30,
+            "completed_days": 0
+        },
+        "P": {
+            "name": "Programar",
+            "goal_days": 25,
+            "completed_days": 0
+        },
+        "T": {
+            "name": "Tomar Agua",
+            "goal_days": 21,
+            "completed_days": 0
+        }
     },
-    "progress": [],
-    "auto_run": false
+    "progress": [
+        {
+            "D\u00eda": 1,
+            "A": "X",
+            "A_Comentario": "12 hrs",
+            "P": "X",
+            "P_Comentario": "1 hr",
+            "T": "X",
+            "T_Comentario": "7 vasos"
+        },
+        {
+            "D\u00eda": 2,
+            "A": "X",
+            "A_Comentario": "12 hrs",
+            "P": "X",
+            "P_Comentario": "3 hrs",
+            "T": "X",
+            "T_Comentario": "7 vasos"
+        },
+        {
+            "D\u00eda": 3,
+            "A": "X",
+            "A_Comentario": "14 hrs",
+            "P": "X",
+            "P_Comentario": "30 min",
+            "T": "X",
+            "T_Comentario": "2 litros"
+        }
+    ],
+    "auto_run": true
 }
